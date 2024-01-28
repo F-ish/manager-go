@@ -9,19 +9,19 @@ import (
 )
 
 type KubeMessenger struct {
-	client   *kubesys.KubernetesClient
+	Client   *kubesys.KubernetesClient
 	nodeName string
 }
 
-func (m *KubeMessenger) NewKubeMessenger(client *kubesys.KubernetesClient, nodeName string) *KubeMessenger {
+func NewKubeMessenger(Client *kubesys.KubernetesClient, nodeName string) *KubeMessenger {
 	return &KubeMessenger{
-		client:   client,
+		Client:   Client,
 		nodeName: nodeName,
 	}
 }
 
 func (m *KubeMessenger) getNodeInfo() *v1.Node {
-	node, err := m.client.GetResource("Node", "", m.nodeName)
+	node, err := m.Client.GetResource("Node", "", m.nodeName)
 	if err != nil {
 		fmt.Println("getNodeInfo error")
 		return nil
@@ -42,7 +42,7 @@ func (m *KubeMessenger) updateNodeStatus(nodeInfo *v1.Node) error {
 		fmt.Println("getNodeInfo error")
 		return err
 	}
-	_, err = m.client.UpdateResourceStatus(string(nodeInfoJson))
+	_, err = m.Client.UpdateResourceStatus(string(nodeInfoJson))
 	if err != nil {
 		fmt.Println("getNodeInfo error")
 		return err
@@ -56,7 +56,7 @@ func (m *KubeMessenger) updateNode(nodeInfo *v1.Node) error {
 		fmt.Println("getNodeInfo error")
 		return err
 	}
-	_, err = m.client.UpdateResource(string(nodeInfoJson))
+	_, err = m.Client.UpdateResource(string(nodeInfoJson))
 	if err != nil {
 		fmt.Println("getNodeInfo error")
 		return err
@@ -69,7 +69,7 @@ func (m *KubeMessenger) UpdatePodAnnotations(pod *v1.Pod) error {
 	if err != nil {
 		return err
 	}
-	_, err = m.client.UpdateResource(string(podJson))
+	_, err = m.Client.UpdateResource(string(podJson))
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func (m *KubeMessenger) UpdatePodAnnotations(pod *v1.Pod) error {
 }
 
 func (m *KubeMessenger) getPodOnNode(nameSpace string, podName string) *v1.Pod {
-	podByteInfo, err := m.client.GetResource("Pod", nameSpace, podName)
+	podByteInfo, err := m.Client.GetResource("Pod", nameSpace, podName)
 	if err != nil {
 		fmt.Println("getpodByteInfo error")
 		return nil
@@ -94,7 +94,7 @@ func (m *KubeMessenger) getPodOnNode(nameSpace string, podName string) *v1.Pod {
 
 func (m *KubeMessenger) GetPendingPodOnNode() []*v1.Pod {
 	pendingPodList := make([]*v1.Pod, 0)
-	podByteList, err := m.client.ListResources("Pod", "")
+	podByteList, err := m.Client.ListResources("Pod", "")
 	if err != nil {
 		return nil
 	}

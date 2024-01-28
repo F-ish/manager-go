@@ -458,10 +458,11 @@ func (vm *VirtualManager) createPidsFile(pidFileName, containerID string, pod *g
 	cFileName := C.CString(pidFileName)
 	defer C.free(unsafe.Pointer(cFileName))
 
-	cgroupPath, err := getCgroupPath(pod, containerID)
-	if err != nil {
-		return err
-	}
+	//cgroupPath, err := getCgroupPath(pod, containerID)
+	cgroupPath := getCgroupPath(pod, containerID)
+	// if err != nil {
+	// 	return err
+	// }
 
 	pidsInContainer := make([]int, 0)
 	var cgroupBase = " "

@@ -44,13 +44,12 @@ func getCgroupVersion() int {
 	cmd := exec.Command("sh", "-c", "mount | grep cgroup")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		//klog.Errorf("can't exec shell %v", err)
+
 	}
 
-	// 将输出转换为字符串
 	outputStr := string(output)
 
-	// 进一步处理输出，可以将其拆分为行
+	// 拆分为行
 	lines := strings.Split(outputStr, "\n")
 	for _, line := range lines {
 		if strings.Contains(line, "/sys/fs/cgroup/memory") {
@@ -61,16 +60,16 @@ func getCgroupVersion() int {
 	return 1
 }
 
-func getCgroupPath(pod *gjson.Result, containerID string) (string, error) {
+func getCgroupPath(pod *gjson.Result, containerID string) string {
 	meta := pod.Get("metadata")
 	podUID := meta.Get("uid").String()
 	if podUID == "" {
-		return "", err
+		return ""
 	}
 	status := pod.Get("status")
 	qosClass := status.Get("qosClass").String()
 	if qosClass == "" {
-		return "", err
+		return ""
 	}
 
 	podUID = strings.Replace(podUID, "-", "_", -1) + ".slice"
@@ -92,7 +91,7 @@ func getCgroupPath(pod *gjson.Result, containerID string) (string, error) {
 	 	docker-2ca438972fbddcba23e1b8d4c5c9c4d28e7a1cbd466067f624434a92e3446ba5.scope
 		containerd时对应的是
 	*/
-	return fmt.Sprintf("%s/docker-%s.scope", path, containerID), nil
+	return fmt.Sprintf("%s/docker-%s.scope", path, containerID)
 }
 
 func readProcsFile(file string) ([]int, error) {
